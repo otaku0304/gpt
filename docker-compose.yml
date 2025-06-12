@@ -7,12 +7,7 @@ services:
       - "11434:11434"
     volumes:
       - ollama-data:/root/.ollama
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
-  preload:
+  mistral-7b-preload:
     image: curlimages/curl
     depends_on: [ ollama ]
     entrypoint: >
@@ -22,7 +17,7 @@ services:
       "
     restart: "no"
 
-  app:
+  flask:
     image: python:3.12-slim
     depends_on:
       - ollama
