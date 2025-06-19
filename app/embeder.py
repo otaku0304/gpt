@@ -1,12 +1,8 @@
 import os
 from sentence_transformers import SentenceTransformer
-import chromadb
+from chromadb import PersistentClient
 
-# Use named Docker volume mounted at /root/.chromadb
-chroma_client = chromadb.Client(chromadb.config.Settings(
-    persist_directory="/root/.chromadb"
-))
-
+chroma_client = PersistentClient(path="/root/.chromadb")
 collection = chroma_client.get_or_create_collection("alliance_docs")
 
 embedding_model = SentenceTransformer("BAAI/bge-small-en-v1.5")
@@ -18,18 +14,23 @@ def load_and_embed_docs(folder="documents"):
     if not os.path.exists(folder_path):
         raise FileNotFoundError(f"Folder not found: {folder_path}")
 
+    existing_ids = set(collection.get()['ids'])
+    print("Existing IDs:", existing_ids)
+
     for filename in os.listdir(folder_path):
         if filename.endswith(".txt"):
-            with open(os.path.join(folder_path, filename), "r") as f:
+            with open(os.path.join(folder_path, filename), "r", encoding="utf-8") as f:
                 text = f.read()
                 chunks = [text[i:i+512] for i in range(0, len(text), 512)]
                 for idx, chunk in enumerate(chunks):
-                    emb = embedding_model.encode(chunk).tolist()
-                    collection.add(
-                        documents=[chunk],
-                        embeddings=[emb],
-                        ids=[f"{filename}-{idx}"]
-                    )
+                    id_ = f"{filename}-{idx}"
+                    if id_ not in existing_ids:
+                        emb = embedding_model.encode(chunk).tolist()
+                        collection.add(
+                            documents=[chunk],
+                            embeddings=[emb],
+                            ids=[id_]
+                        )
 
 def get_context(question, top_k=1):
     question_emb = embedding_model.encode(question).tolist()
