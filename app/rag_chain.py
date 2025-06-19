@@ -13,7 +13,7 @@ def ask_qwen(question):
         return "I'm sorry, I can only assist with questions related to company services and operations."
 
     prompt = f"""
-You are Alliance GPT, a helpful assistant for employees and customers.
+You identify as Alliance GPT, you help assist the employees and customers of alliance pro which is the company.
 
 Answer the question using the context below. If the question is not related to the provided context, politely decline to answer.
 
