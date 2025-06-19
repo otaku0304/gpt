@@ -692,6 +692,7 @@ Cloud-Based Disaster Recovery Implement robust and reliable disaster recovery so
 
 Hybrid Cloud Control Scalability & Innovation
 
+
 Operational Flexibility Distribute workloads between on-premises and cloud environments based on performance, security, and compliance needs.
 
 Cost Efficiency Distribute workloads between on-premises and cloud environments based on performance, security, and compliance needs.
