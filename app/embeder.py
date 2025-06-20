@@ -32,7 +32,9 @@ def load_and_embed_docs(folder="documents"):
                             ids=[id_]
                         )
 
-def get_context(question, top_k=1):
+def get_context(question, top_k=3):
     question_emb = embedding_model.encode(question).tolist()
     results = collection.query(query_embeddings=[question_emb], n_results=top_k)
-    return "\n---\n".join(results['documents'][0]) if results['documents'] else ""
+    docs = results.get("documents", [[]])[0]  # avoid crash on empty
+    return "\n---\n".join(docs) if docs else ""
+

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask
 
 from embeder import collection, embedding_model
 from rag_chain import ask_qwen
@@ -46,17 +46,36 @@ def upload():
 def get_all_vectors():
     try:
         results = collection.get()
-        documents = results.get("documents", [])
-        ids = results.get("ids", [])
-        embeddings = results.get("embeddings", [])
+
+        if not results:
+            return jsonify({"error": "collection.get() returned None or empty"}), 404
+        documents = results.get("documents")
+        ids = results.get("ids")
+        embeddings = results.get("embeddings")
+
+        if not isinstance(documents, list) or not isinstance(ids, list) or not isinstance(embeddings, list):
+            return jsonify({
+                "error": "Invalid result format from collection.get()",
+                "details": {
+                    "documents": str(type(documents)),
+                    "ids": str(type(ids)),
+                    "embeddings": str(type(embeddings))
+                }
+            }), 500
 
         response = []
         for i in range(len(ids)):
+            doc = documents[i] if i < len(documents) else None
+            emb = embeddings[i] if i < len(embeddings) else None
+
+            if emb is None:
+                return jsonify({"error": f"Embedding at index {i} is None"}), 500
+
             response.append({
                 "id": ids[i],
-                "document": documents[i],
-                "embedding_preview": embeddings[i][:5],  # First 5 floats
-                "embedding_size": len(embeddings[i])
+                "document": doc,
+                "embedding_preview": emb[:5],
+                "embedding_size": len(emb)
             })
 
         return jsonify({

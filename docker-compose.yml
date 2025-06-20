@@ -18,7 +18,9 @@ services:
     entrypoint: >
       sh -c "
         sleep 10 &&
-        curl -X POST http://ollama:11434/api/pull -d '{\"name\":\"mistral:7b\"}'
+        curl -X POST http://ollama:11434/api/pull -d '{\"name\":\"mistral:7b\"}' &&
+        sleep 2 &&
+        curl -X POST http://ollama:11434/api/generate -d '{\"model\":\"mistral:7b\",\"prompt\":\"hello\",\"stream\":false}'
       "
     restart: "no"
     environment:
