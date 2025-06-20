@@ -42,6 +42,30 @@ def upload():
 
     return jsonify({"message": f"{new_chunks} chunks added from {filename}."})
 
+@app.route("/vectors", methods=["GET"])
+def get_all_vectors():
+    try:
+        results = collection.get()
+        documents = results.get("documents", [])
+        ids = results.get("ids", [])
+        embeddings = results.get("embeddings", [])
+
+        response = []
+        for i in range(len(ids)):
+            response.append({
+                "id": ids[i],
+                "document": documents[i],
+                "embedding_preview": embeddings[i][:5],  # First 5 floats
+                "embedding_size": len(embeddings[i])
+            })
+
+        return jsonify({
+            "total": len(response),
+            "vectors": response
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     print("Ready to answer!")
