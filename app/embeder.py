@@ -9,6 +9,5 @@ embedding_model = SentenceTransformer("BAAI/bge-small-en-v1.5")
 def get_context(question, top_k=3):
     question_emb = embedding_model.encode(question).tolist()
     results = collection.query(query_embeddings=[question_emb], n_results=top_k)
-    docs = results.get("documents", [[]])[0]  # avoid crash on empty
+    docs = results.get("documents", [[]])[0]
     return "\n---\n".join(docs) if docs else ""
-

@@ -1,4 +1,6 @@
-from flask import Flask
+import hashlib
+
+from flask import request, jsonify, Flask
 
 from embeder import collection, embedding_model
 from rag_chain import ask_qwen
@@ -14,8 +16,6 @@ def ask():
     answer = ask_qwen(question)
     return jsonify({"answer": answer})
 
-from flask import request, jsonify
-
 @app.route("/upload", methods=["POST"])
 def upload():
     uploaded_file = request.files.get("file")
@@ -26,21 +26,24 @@ def upload():
     if not uploaded_file.filename.endswith(".txt"):
         return jsonify({"error": "Only .txt files are supported"}), 400
 
-    filename = uploaded_file.filename
-    content = uploaded_file.read().decode("utf-8")
+    try:
+        content = uploaded_file.read().decode("utf-8")
+    except UnicodeDecodeError:
+        return jsonify({"error": "Unsupported file encoding"}), 400
 
     chunks = [content[i:i+512] for i in range(0, len(content), 512)]
-    existing_ids = set(collection.get()['ids'])
+    existing_ids = set(collection.get().get("ids", []))
 
     new_chunks = 0
-    for idx, chunk in enumerate(chunks):
-        id_ = f"{filename}-{idx}"
-        if id_ not in existing_ids:
+    for chunk in chunks:
+        id_hash = hashlib.md5(chunk.encode("utf-8")).hexdigest()
+
+        if id_hash not in existing_ids:
             emb = embedding_model.encode(chunk).tolist()
-            collection.add(documents=[chunk], embeddings=[emb], ids=[id_])
+            collection.add(documents=[chunk], embeddings=[emb], ids=[id_hash])
             new_chunks += 1
 
-    return jsonify({"message": f"{new_chunks} chunks added from {filename}."})
+    return jsonify({"message": f"{new_chunks} new unique chunks added from {uploaded_file.filename}."})
 
 @app.route("/vectors", methods=["GET"])
 def get_all_vectors():
