@@ -1,11 +1,15 @@
 import hashlib
 
-from flask import request, jsonify, Flask
+from flask import request, jsonify, Flask, render_template
 
 from embeder import collection, embedding_model
 from rag_chain import ask_qwen
 
 app = Flask(__name__)
+
+@app.route('/')
+def form_page():
+    return render_template('index.html', error=None, success=None)
 
 @app.route("/ask", methods=["POST"])
 def ask():
