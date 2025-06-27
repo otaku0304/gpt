@@ -24,7 +24,7 @@ Question:
 {question}
 """
     response = ollama_client.chat(
-        model="mistral:7b",
+        model="phi",
         messages=[{"role": "user", "content": prompt}]
     )
     return response['message']['content']

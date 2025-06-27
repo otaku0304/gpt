@@ -5,7 +5,7 @@ import chromadb
 chroma_client = chromadb.Client()
 collection = chroma_client.get_or_create_collection("alliance_docs")
 
-embedding_model = SentenceTransformer("BAAI/bge-small-en-v1.5")
+embedding_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
 def load_and_embed_docs(folder="documents"):
     # Make the path absolute relative to the script location

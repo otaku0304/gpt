@@ -7,13 +7,16 @@ services:
       - "11434:11434"
     volumes:
       - ollama-data:/root/.ollama
-  mistral-7b-preload:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+  phi-preload:
     image: curlimages/curl
     depends_on: [ ollama ]
     entrypoint: >
       sh -c "
         sleep 10 &&
-        curl -X POST http://ollama:11434/api/pull -d '{\"name\":\"mistral:7b\"}'
+        curl -X POST http://ollama:11434/api/pull -d '{\"name\":\"phi\"}'
       "
     restart: "no"
 
