@@ -10,13 +10,13 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
 
-  phi-preload:
+  llama3-preload:
     image: curlimages/curl
     depends_on: [ ollama ]
     entrypoint: >
       sh -c "
         sleep 10 &&
-        curl -X POST http://ollama:11434/api/pull -d '{\"name\":\"phi\"}'
+        curl -X POST http://ollama:11434/api/pull -d '{\"name\":\"llama3:8b\"}'
       "
     restart: "no"
 

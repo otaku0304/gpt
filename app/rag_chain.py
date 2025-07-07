@@ -15,7 +15,7 @@ def ask_qwen(question):
     prompt = f"""
 You are Alliance GPT, a helpful assistant for employees and customers.
 
-Answer the question using the context below. If the question is not related to the provided context, politely decline to answer.
+Answer the following question using the provided context. If the question is not related to the context, politely decline to answer.
 
 Context:
 {context}
@@ -23,8 +23,10 @@ Context:
 Question:
 {question}
 """
+
     response = ollama_client.chat(
-        model="phi",
+        model="llama3:8b",
         messages=[{"role": "user", "content": prompt}]
     )
+
     return response['message']['content']
