@@ -11,18 +11,14 @@ app = FastAPI(title="AllianceGPT API")
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change to frontend origin in prod
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ---------- Models ----------
 class AskRequest(BaseModel):
     question: str
-
-
-# ---------- Routes ----------
 
 @app.get("/")
 def read_root():
@@ -35,7 +31,6 @@ def ask_question(data: AskRequest):
         raise HTTPException(status_code=400, detail="Missing question")
     answer = ask_qwen(question)
     return {"answer": answer}
-
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
@@ -55,12 +50,12 @@ async def upload_file(file: UploadFile = File(...)):
     for chunk in chunks:
         id_hash = hashlib.md5(chunk.encode("utf-8")).hexdigest()
         if id_hash not in existing_ids:
+            print("\n🧩 New Chunk Preview:", chunk[:200])
             emb = embedding_model.encode(chunk).tolist()
             collection.add(documents=[chunk], embeddings=[emb], ids=[id_hash])
             new_chunks += 1
 
     return {"message": f"{new_chunks} new unique chunks added from {file.filename}."}
-
 
 @app.get("/vectors")
 def get_all_vectors():

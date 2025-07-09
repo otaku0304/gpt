@@ -1,6 +1,5 @@
 import os
 import ollama
-
 from embeder import get_context
 
 ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
@@ -13,9 +12,10 @@ def ask_qwen(question):
         return "I'm sorry, I can only assist with questions related to company services and operations."
 
     prompt = f"""
-You are Alliance GPT, a helpful assistant for employees and customers.
+You are Alliance GPT, an AI assistant designed to provide direct and helpful responses using the given context.
 
-Answer the following question using the provided context. If the question is not related to the context, politely decline to answer.
+Answer the following question **briefly but clearly**. If the question is unrelated to the context, politely decline to answer.
+Remember: if the user greets you, greet them back. Also try to retain context of this session to be helpful in follow-up questions.
 
 Context:
 {context}
