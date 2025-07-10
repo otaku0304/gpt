@@ -8,7 +8,7 @@ from rag_chain import ask_qwen
 
 app = FastAPI(title="AllianceGPT API")
 
-# CORS
+# CORS 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
